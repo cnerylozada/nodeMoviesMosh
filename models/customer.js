@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const yup = require("yup");
 
 const customerSchema = new mongoose.Schema({
   name: {
@@ -17,5 +18,14 @@ const customerSchema = new mongoose.Schema({
   },
 });
 
+const validateCustomer = (customer) => {
+  const schema = yup.object().shape({
+    name: yup.string().required().min(5).max(50),
+    isGold: yup.boolean().default(false),
+    phone: yup.string().required(),
+  });
+  return schema.validate(customer, { abortEarly: false });
+};
+
 const Customer = mongoose.model("Customer", customerSchema);
-module.exports = Customer;
+module.exports = { Customer, validateCustomer };
