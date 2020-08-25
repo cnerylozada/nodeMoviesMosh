@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const { genreSchema } = require("./genre");
+const yup = require("yup");
 
 const movieSchema = new mongoose.Schema({
   title: {
@@ -33,5 +34,15 @@ const movieSchema = new mongoose.Schema({
     },
   },
 });
+
+exports.validateMovie = (movie) => {
+  const schema = yup.object().shape({
+    title: yup.string().min(2).max(30).required(),
+    genreId: yup.string().required(),
+    numberInStock: yup.number().integer().min(1).max(100).required(),
+    dailyRentalRate: yup.number().integer().min(1).max(5).required(),
+  });
+  return schema.validate(movie, { abortEarly: false });
+};
 
 exports.Movie = mongoose.model("Movie", movieSchema);
