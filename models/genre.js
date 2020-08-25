@@ -16,3 +16,4 @@ exports.validateGenre = (genre) => {
   return schema.validate(genre);
 };
 exports.Genre = mongoose.model("Genre", genre);
+exports.genreSchema = genre;
