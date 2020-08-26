@@ -1,2 +1,3 @@
-exports.customerNotFound = "The customer with the given ID was not found.";
-exports.genreNotFound = "The genre with the given ID was not found.";
+
+exports.itemWasDeleted = item => `The ${item} was deleted`;
+exports.itemWasNotFound = item => `The ${item} with the given ID was not found`;

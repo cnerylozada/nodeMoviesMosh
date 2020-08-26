@@ -1,7 +1,7 @@
 const express = require("express");
 const { validateGenre, Genre } = require("../models/genre");
 const router = express.Router();
-const { genreNotFound } = require("../util/errors");
+const { itemWasNotFound, itemWasDeleted } = require("../util/errors");
 
 router.get("/", async (req, res) => {
   const genres = await Genre.find().select("-__v");
@@ -10,7 +10,7 @@ router.get("/", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
   const genre = await Genre.findById(req.params.id).select("-__v");
-  !!genre ? res.status(302).send(genre) : res.status(404).send(genreNotFound);
+  !!genre ? res.status(302).send(genre) : res.status(404).send(itemWasNotFound('genre'));
 });
 
 router.post("/", async (req, res) => {
@@ -35,15 +35,16 @@ router.put("/:id", async (req, res) => {
     );
     res.status(202).send(genreEdited);
   } catch (error) {
-    res.status(400).send(!!error.errors ? error.errors : genreNotFound);
+    res.status(400).send(!!error.errors ? error.errors : itemWasNotFound('genre'));
   }
 });
 
 router.delete("/:id", async (req, res) => {
   try {
-    await Genre.deleteOne(req.params.id);
+    await Genre.findByIdAndRemove(req.params.id);
+    res.send(itemWasDeleted('genre'));
   } catch (error) {
-    res.status(400).send(genreNotFound);
+    res.status(400).send(itemWasNotFound('genre'));
   }
 });
 
