@@ -2,7 +2,6 @@ const express = require("express");
 const { Movie, validateMovie } = require("../models/movie");
 const { itemWasNotFound, itemWasDeleted } = require("../util/errors");
 const { Genre } = require("../models/genre");
-
 const router = express.Router();
 
 router.get("/", async (req, res) => {
@@ -13,7 +12,7 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     const movie = await Movie.findById(req.params.id);
-    res.status(302).send(movie);
+    res.status(200).send(movie);
   } catch (error) {
     res.status(404).send(itemWasNotFound("movie"));
   }
@@ -41,7 +40,6 @@ router.put("/:id", async (req, res) => {
   try {
     await validateMovie(req.body);
     const genre = await Genre.findById(req.body.genreId).select("-__v");
-    console.log(genre);
     const movieEdited = await Movie.findByIdAndUpdate(
       req.params.id,
       {

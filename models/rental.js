@@ -31,10 +31,10 @@ const rentalSchema = new mongoose.Schema({
   dateOut: {
     type: Date,
     required: true,
+    default: Date.now(),
   },
   dateReturned: {
     type: Date,
-    required: true,
   },
   rentalFee: {
     type: Number,
@@ -44,8 +44,10 @@ const rentalSchema = new mongoose.Schema({
 
 exports.validateRental = (rental) => {
   const schema = yup.object().shape({
-    customer: yup.string().required,
+    customerId: yup.string().required(),
+    movieId: yup.string().required(),
   });
+  return schema.validate(rental, { abortEarly: false });
 };
 
 exports.Rental = mongoose.model("Rental", rentalSchema);

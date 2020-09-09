@@ -10,7 +10,9 @@ router.get("/", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
   const genre = await Genre.findById(req.params.id).select("-__v");
-  !!genre ? res.status(302).send(genre) : res.status(404).send(itemWasNotFound('genre'));
+  !!genre
+    ? res.status(200).send(genre)
+    : res.status(404).send(itemWasNotFound("genre"));
 });
 
 router.post("/", async (req, res) => {
@@ -35,16 +37,18 @@ router.put("/:id", async (req, res) => {
     );
     res.status(202).send(genreEdited);
   } catch (error) {
-    res.status(400).send(!!error.errors ? error.errors : itemWasNotFound('genre'));
+    res
+      .status(400)
+      .send(!!error.errors ? error.errors : itemWasNotFound("genre"));
   }
 });
 
 router.delete("/:id", async (req, res) => {
   try {
     await Genre.findByIdAndRemove(req.params.id);
-    res.send(itemWasDeleted('genre'));
+    res.send(itemWasDeleted("genre"));
   } catch (error) {
-    res.status(400).send(itemWasNotFound('genre'));
+    res.status(400).send(itemWasNotFound("genre"));
   }
 });
 
