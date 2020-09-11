@@ -16,6 +16,7 @@ router.post("/", async (req, res) => {
     if (!customer) return res.status(400).send(itemWasNotFound("customer"));
     const movie = await Customer.findById(req.body.movieId);
     if (!movie) return res.status(400).send(itemWasNotFound("movie"));
+    if (!movie.numberInStock) return res.status(400).send("Movie not in stock");
     res.status(201).send("new rental was created !");
   } catch (error) {
     res.status(400).send(error.errors);
