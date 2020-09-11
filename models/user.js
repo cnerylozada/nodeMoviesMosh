@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 const yup = require("yup");
+const bcrypt = require("bcrypt");
+
 const userSchema = new mongoose.Schema({
   email: {
     type: String,
@@ -15,6 +17,12 @@ const userSchema = new mongoose.Schema({
     required: true,
     minlength: 7,
   },
+});
+
+userSchema.pre("save", async function (next) {
+  const salt = await bcrypt.genSalt();
+  this.password = await bcrypt.hash(this.password, salt);
+  next();
 });
 
 exports.validateUser = (user) => {
