@@ -1,6 +1,7 @@
 const express = require("express");
 const connectToMongoAtlas = require("./startup/db");
 const morgan = require("morgan");
+const cookieParser = require("cookie-parser");
 const app = express();
 
 const setPORT = async () => {
@@ -11,5 +12,6 @@ const setPORT = async () => {
 
 require("./startup/cors")(app);
 setPORT();
+app.use(cookieParser());
 app.use(morgan("tiny"));
 require("./startup/routes")(app);
