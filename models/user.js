@@ -19,6 +19,26 @@ const userSchema = new mongoose.Schema({
   },
 });
 
+userSchema.statics.login = async function (email, password) {
+  const user = await this.findOne({ email });
+  if (!!user) {
+    const auth = await bcrypt.compare(password, user.password);
+    if (!!auth) return user;
+    throw Error(
+      JSON.stringify({
+        status: 400,
+        message: "Bad password",
+      })
+    );
+  }
+  throw Error(
+    JSON.stringify({
+      status: 404,
+      message: "Invalid credentials",
+    })
+  );
+};
+
 userSchema.pre("save", async function (next) {
   const salt = await bcrypt.genSalt();
   this.password = await bcrypt.hash(this.password, salt);
