@@ -15,8 +15,8 @@ router.get("/", async (req, res) => {
 router.post("/", async (req, res) => {
   try {
     await validateUser(req.body);
-    const isEmailAlreadyExist = await User.find({ email: req.body.email });
-    if (!!isEmailAlreadyExist.length)
+    const isEmailAlreadyExist = await User.findOne({ email: req.body.email });
+    if (!!isEmailAlreadyExist)
       return res.status(400).send("Email is already registered");
     const user = await new User(req.body).save();
     const token = createToken({ id: user._id, email: user.email });
