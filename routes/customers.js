@@ -1,7 +1,11 @@
 const express = require("express");
 const { Customer, validateCustomer } = require("../models/customer");
-const { itemWasNotFound, itemWasDeleted } = require("../util/errors");
-
+const {
+  itemWasNotFound,
+  itemWasDeleted,
+  invalidId,
+} = require("../util/errors");
+const { isValidObjectId } = require("../util/methods");
 const router = express.Router();
 
 router.get("/", async (req, res) => {
@@ -10,10 +14,11 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/:id", async (req, res) => {
+  if (!isValidObjectId(req.params.id)) res.status(404).send(invalidId());
   const customer = await Customer.findById(req.params.id).select("-__v");
   !!customer
     ? res.status(302).send(customer)
-    : res.status(404).send(itemWasNotFound('customer'));
+    : res.status(404).send(itemWasNotFound("customer"));
 });
 
 router.post("/", async (req, res) => {
@@ -28,6 +33,7 @@ router.post("/", async (req, res) => {
 
 router.put("/:id", async (req, res) => {
   try {
+    if (!isValidObjectId(req.params.id)) res.status(404).send(invalidId());
     await validateCustomer(req.body);
     const customerEdited = await Customer.findByIdAndUpdate(
       req.params.id,
@@ -40,16 +46,19 @@ router.put("/:id", async (req, res) => {
     );
     res.status(202).send(customerEdited);
   } catch (error) {
-    res.status(400).send(!!error.errors ? error.errors : itemWasNotFound('customer'));
+    res
+      .status(400)
+      .send(!!error.errors ? error.errors : itemWasNotFound("customer"));
   }
 });
 
 router.delete("/:id", async (req, res) => {
   try {
+    if (!isValidObjectId(req.params.id)) res.status(404).send(invalidId());
     await Customer.findByIdAndRemove(req.params.id);
-    res.send(itemWasDeleted('customer'));
+    res.send(itemWasDeleted("customer"));
   } catch (error) {
-    res.status(404).send(itemWasNotFound('customer'));
+    res.status(404).send(itemWasNotFound("customer"));
   }
 });
 

@@ -13,11 +13,11 @@ router.post("/", async (req, res) => {
     const { email, password } = req.body;
     const user = await User.login(email, password);
     const token = createToken({ id: user._id, email: user.email });
-    res.cookie("jwt", token, {
-      httpOnly: true,
-      maxAge: tokenExpirationInSeconds * 1000,
-    });
-    res.status(200).send(user._id);
+    res
+      .status(200)
+      .header("x-auth-token", token)
+      .header("access-control-expose-headers", "x-auth-token")
+      .send(user._id);
   } catch (error) {
     if (!!error.errors) res.status(400).send(error.errors);
     else {
