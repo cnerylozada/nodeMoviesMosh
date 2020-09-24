@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const yup = require("yup");
+const bcrypt = require("bcrypt");
 const { isValidEmail } = require("../util/methods");
 
 const userSchema = new mongoose.Schema({
@@ -16,6 +17,12 @@ const userSchema = new mongoose.Schema({
     required: true,
     minlength: 6,
   },
+});
+
+userSchema.pre("save", async function (next) {
+  const salt = await bcrypt.genSalt();
+  this.password = await bcrypt.hash(this.password, salt);
+  next();
 });
 
 exports.validateUser = (user) => {
