@@ -1,13 +1,15 @@
 const express = require("express");
 const { validateUser, User } = require("../models/users");
+const { getToken } = require("../util/methods");
 const router = express.Router();
 
 router.post("/", async (req, res) => {
   try {
     await validateUser(req.body);
     const { email, password } = req.body;
-    await User.login(email, password);
-    res.status(201).send("login!");
+    const user = await User.login(email, password);
+    const jwt = getToken({ id: user._id, email: user.email });
+    res.status(201).send(jwt);
   } catch (error) {
     if (!!error.errors) {
       res.status(400).send(error.errors);
