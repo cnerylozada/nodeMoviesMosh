@@ -1,9 +1,10 @@
 const jwt = require("jsonwebtoken");
+const config = require("config");
 
 const tokenExpiratonTimeInSeconds = 3 * 60;
 
 exports.getToken = (user) => {
-  return jwt.sign({ user }, "topSecret", {
+  return jwt.sign({ user }, config.get("jwtPrivateKey"), {
     expiresIn: tokenExpiratonTimeInSeconds,
   });
 };

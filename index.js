@@ -1,7 +1,13 @@
 const express = require("express");
+const config = require("config");
 const connectToMongoAtlas = require("./startup/db");
 const morgan = require("morgan");
 const app = express();
+
+if (!config.get("jwtPrivateKey")) {
+  console.error("FATAL ERROR: jwtPrivateKey is not defined");
+  process.exit(1);
+}
 
 const setPORT = async () => {
   await connectToMongoAtlas();
