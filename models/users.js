@@ -27,11 +27,7 @@ userSchema.pre("save", async function (next) {
 
 exports.validateUser = (user) => {
   const schema = yup.object().shape({
-    email: yup
-      .string()
-      .required("isEmai", "Enter a valid email", (email) =>
-        isValidEmail(email)
-      ),
+    email: yup.string().email().required(),
     password: yup.string().required().min(6),
   });
   return schema.validate(user, { abortEarly: false });

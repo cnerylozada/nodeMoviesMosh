@@ -1,6 +1,6 @@
 const express = require("express");
+const _ = require("lodash");
 const { User, validateUser } = require("../models/users");
-const { isValidEmail } = require("../util/methods");
 const router = express.Router();
 
 router.get("/", async (req, res) => {
@@ -13,8 +13,8 @@ router.post("/", async (req, res) => {
     await validateUser(req.body);
     const isEmailInUse = await User.findOne({ email: req.body.email });
     if (!!isEmailInUse) res.status(400).send("Email is already in use");
-    const user = await new User(req.body).save();
-    res.status(201).send(user);
+    const user = await new User(_.pick(req.body, ["email", "password"])).save();
+    res.status(201).send(_.pick(user, ["_id", "email"]));
   } catch (error) {
     res.status(400).send(error.errors);
   }
