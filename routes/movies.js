@@ -2,6 +2,7 @@ const express = require("express");
 const { Movie, validateMovie } = require("../models/movie");
 const { itemWasNotFound, itemWasDeleted } = require("../util/errors");
 const { Genre } = require("../models/genre");
+const auth = require("../middlewares/auth");
 const router = express.Router();
 
 router.get("/", async (req, res) => {
@@ -18,7 +19,7 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-router.post("/", async (req, res) => {
+router.post("/", auth, async (req, res) => {
   try {
     await validateMovie(req.body);
     const genre = await Genre.findById(req.body.genreId).select("-__v");

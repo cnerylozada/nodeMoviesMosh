@@ -1,12 +1,14 @@
 const express = require("express");
 const _ = require("lodash");
+const auth = require("../middlewares/auth");
 const { User, validateUser } = require("../models/users");
 const { getToken } = require("../util/methods");
 const router = express.Router();
 
-router.get("/", async (req, res) => {
-  const users = await User.find();
-  res.status(200).send(users);
+router.get("/me", auth, async (req, res) => {
+  const { id } = req.payload.user;
+  const user = await User.findById(id).select("-password");
+  res.send(user);
 });
 
 router.post("/", async (req, res) => {
