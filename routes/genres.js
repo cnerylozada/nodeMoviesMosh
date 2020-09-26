@@ -1,4 +1,5 @@
 const express = require("express");
+const auth = require("../middlewares/auth");
 const { validateGenre, Genre } = require("../models/genre");
 const router = express.Router();
 const { itemWasNotFound, itemWasDeleted } = require("../util/errors");
@@ -15,7 +16,7 @@ router.get("/:id", async (req, res) => {
     : res.status(404).send(itemWasNotFound("genre"));
 });
 
-router.post("/", async (req, res) => {
+router.post("/", auth, async (req, res) => {
   try {
     await validateGenre(req.body);
     const newGenre = await new Genre(req.body).save();
