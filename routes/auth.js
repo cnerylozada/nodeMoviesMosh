@@ -8,7 +8,7 @@ router.post("/", async (req, res) => {
     await validateUser(req.body);
     const { email, password } = req.body;
     const user = await User.login(email, password);
-    const jwt = getToken({ id: user._id, email: user.email });
+    const jwt = user.getToken();
     res.status(201).send(jwt);
   } catch (error) {
     if (!!error.errors) {

@@ -1,7 +1,13 @@
 const mongoose = require("mongoose");
 const yup = require("yup");
 const bcrypt = require("bcrypt");
-const { isValidEmail } = require("../util/methods");
+const jwt = require("jsonwebtoken");
+const config = require("config");
+
+const {
+  isValidEmail,
+  tokenExpiratonTimeInSeconds,
+} = require("../util/methods");
 
 const userSchema = new mongoose.Schema({
   email: {
@@ -17,7 +23,20 @@ const userSchema = new mongoose.Schema({
     required: true,
     minlength: 6,
   },
+  isAdmin: {
+    type: Boolean,
+  },
 });
+
+userSchema.methods.getToken = function () {
+  return jwt.sign(
+    { user: { id: this._id, email: this.email, isAdmin: this.isAdmin } },
+    config.get("jwtPrivateKey"),
+    {
+      expiresIn: tokenExpiratonTimeInSeconds,
+    }
+  );
+};
 
 userSchema.statics.login = async function (email, password) {
   const user = await this.findOne({ email });
