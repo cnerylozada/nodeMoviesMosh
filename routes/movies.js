@@ -3,6 +3,7 @@ const { Movie, validateMovie } = require("../models/movie");
 const { itemWasNotFound, itemWasDeleted } = require("../util/errors");
 const { Genre } = require("../models/genre");
 const auth = require("../middlewares/auth");
+const admin = require("../middlewares/admin");
 const router = express.Router();
 
 router.get("/", async (req, res) => {
@@ -59,7 +60,7 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", [auth, admin], async (req, res) => {
   try {
     await Movie.findByIdAndRemove(req.params.id);
     res.send(itemWasDeleted("movie"));
